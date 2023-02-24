@@ -22,15 +22,24 @@ assists_per_game = career_stats.at[season_index, 'AST'] / games_played
 app = Dash(__name__)
 
 app.layout = html.Div(children=[
-    html.H1(children='Player Dashboard'),
-
+    html.Header(children=[
+        html.Img(src='https://cdn.nba.com/logos/leagues/logo-nba.svg', className='logo'),
+        html.H1(children='Player Dashboard', className='title'),
+    ]),
+    
     dcc.Dropdown(players['full_name'], player, id='player-select'),
-    dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),
+    dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),    
 
     html.Div(id='summary-stats', children=[
-        html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
-        html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
-        html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
+        html.Div(children=[
+            html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
+        ], className='summary-stat'),
+        html.Div(children=[
+            html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
+        ], className='summary-stat'),
+        html.Div(children=[
+            html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
+        ], className='summary-stat'),
     ]),
 ])
 
