@@ -1,60 +1,66 @@
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 
-app = Dash(__name__)
+from nba_api.stats.static.players import get_players
+from nba_api.stats.endpoints import playercareerstats
 
-# assume you have a "long-form" data frame
-# see https://plotly.com/python/px-arguments/ for more options
-df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-})
+players = pd.DataFrame(get_players())
+players = players.set_index('id')
 
-fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
-
-app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
-
-    html.Div(children='''
-        Dash: A web application framework for your data.
-    '''),
-
-    dcc.Graph(
-        id='example-graph',
-        figure=fig
-    )
-])
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
-from dash import Dash, html, dcc
-import plotly.express as px
-import pandas as pd
+# Show LeBron James when page first loads
+player = 'LeBron James'
+player_id = players[players['full_name'] == player].index[0]
+career_stats = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0]
+seasons_played = career_stats['SEASON_ID']
+season_index = career_stats.index[-1]
+games_played = career_stats.at[season_index, 'GP']
+points_per_game = career_stats.at[season_index, 'PTS'] / games_played
+rebounds_per_game = career_stats.at[season_index, 'REB'] / games_played
+assists_per_game = career_stats.at[season_index, 'AST'] / games_played
 
 app = Dash(__name__)
 
-df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-})
-
-fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
-
 app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
+    html.H1(children='Player Dashboard'),
 
-    html.Div(children='''
-        Dash: A web application framework for your data.
-    '''),
+    dcc.Dropdown(players['full_name'], player, id='player-select'),
+    dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),
 
-    dcc.Graph(
-        id='example-graph',
-        figure=fig
-    )
+    html.Div(id='summary-stats', children=[
+        html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
+        html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
+        html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
+    ]),
 ])
+
+
+@app.callback(
+    Output('season-select', 'options'),
+    Output('season-select', 'value'),
+    Output('points', 'children'),
+    Output('rebounds', 'children'),
+    Output('assists', 'children'),
+    Input('player-select', 'value'),
+    Input('season-select', 'value'),
+)
+def update_dashboard(player, season):
+    player_id = players[players['full_name'] == player].index[0]
+    career_stats = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0]
+    seasons_played = career_stats['SEASON_ID']
+    if seasons_played.str.contains(season).any():
+        season_index = career_stats[career_stats['SEASON_ID']==season].index[0]
+    else:
+        season_index = career_stats.index[-1]
+        season = career_stats.at[season_index,'SEASON_ID']
+    
+    games_played = career_stats.at[season_index, 'GP']
+    points_per_game = career_stats.at[season_index, 'PTS'] / games_played
+    rebounds_per_game = career_stats.at[season_index, 'REB'] / games_played
+    assists_per_game = career_stats.at[season_index, 'AST'] / games_played
+        
+    return seasons_played, season, f'PPG: {points_per_game:.0f}', f'REB: {rebounds_per_game:.0f}', f'AST: {assists_per_game:.0f}'
+
 
 if __name__ == '__main__':
     app.run(debug=True)
