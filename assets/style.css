@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    font-family: "Roboto", arial, sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    background-color: black;
+}
+
+.logo {
+    margin-right: 0.4em;
+    float: left;
+}
+
+.title {
+    float: left;
+    color: white;
+}
+
+@media (min-width: 500px){
+    #summary-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 20px;
+    }
+}
+
+.summary-stat {
+    background-color: lightgrey;
+}
