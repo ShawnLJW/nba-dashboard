@@ -25,8 +25,38 @@ header {
         grid-template-columns: 1fr 1fr 1fr;
         grid-gap: 20px;
     }
+
+    #dropdown-filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(186px , 1fr));
+        grid-gap: 20px
+    }
+}
+
+#dashboard {
+    margin: 0 auto;
+    width: 90%;
+}
+
+#dropdown-filters {
+    margin: 1em 0;
 }
 
 .summary-stat {
     background-color: lightgrey;
+}
+
+.dropdown-labeled {
+    display: flex;
+    justify-content: center;
+}
+
+.dropdown-labeled p {
+    margin: auto 0.5em;
+    text-align: right;
+    width: 4em;
+}
+
+.dropdown-labeled div {
+    flex: 1;
 }

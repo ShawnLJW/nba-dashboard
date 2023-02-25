@@ -27,20 +27,32 @@ app.layout = html.Div(children=[
         html.H1(children='Player Dashboard', className='title'),
     ]),
     
-    dcc.Dropdown(players['full_name'], player, id='player-select'),
-    dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),    
+    html.Div(id='dashboard', children=[
+        html.Div(id='dropdown-filters', children=[
+            html.Div(children=[
+                html.P(children='Player:'),
+                dcc.Dropdown(players['full_name'], player, id='player-select'),
+            ], className='dropdown-labeled'),
+            html.Div(children=[
+                html.P(children='Season:'),
+                dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),
+            ], className='dropdown-labeled')
+            
+        ]),  
 
-    html.Div(id='summary-stats', children=[
-        html.Div(children=[
-            html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
-        ], className='summary-stat'),
-        html.Div(children=[
-            html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
-        ], className='summary-stat'),
-        html.Div(children=[
-            html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
-        ], className='summary-stat'),
+        html.Div(id='summary-stats', children=[
+            html.Div(children=[
+                html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
+            ], className='summary-stat'),
+            html.Div(children=[
+                html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
+            ], className='summary-stat'),
+            html.Div(children=[
+                html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
+            ], className='summary-stat'),
+        ]),
     ]),
+
 ])
 
 
