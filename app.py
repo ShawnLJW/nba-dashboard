@@ -4,6 +4,7 @@ import pandas as pd
 
 from nba_api.stats.static.players import get_players
 from nba_api.stats.endpoints import playercareerstats
+from nba_api.stats.endpoints import playerdashboardbyyearoveryear
 
 players = pd.DataFrame(get_players())
 players = players.set_index('id')
@@ -11,13 +12,12 @@ players = players.set_index('id')
 # Show LeBron James when page first loads
 player = 'LeBron James'
 player_id = players[players['full_name'] == player].index[0]
-career_stats = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0]
-seasons_played = career_stats['SEASON_ID']
-season_index = career_stats.index[-1]
-games_played = career_stats.at[season_index, 'GP']
-points_per_game = career_stats.at[season_index, 'PTS'] / games_played
-rebounds_per_game = career_stats.at[season_index, 'REB'] / games_played
-assists_per_game = career_stats.at[season_index, 'AST'] / games_played
+player_stats = playerdashboardbyyearoveryear.PlayerDashboardByYearOverYear(player_id).get_data_frames()[1]
+seasons_played = player_stats['GROUP_VALUE']
+games_played = player_stats.at[0, 'GP']
+points_per_game = player_stats.at[0, 'PTS'] / games_played
+rebounds_per_game = player_stats.at[0, 'REB'] / games_played
+assists_per_game = player_stats.at[0, 'AST'] / games_played
 
 app = Dash(__name__)
 
@@ -35,7 +35,7 @@ app.layout = html.Div(children=[
             ], className='dropdown-labeled'),
             html.Div(children=[
                 html.P(children='Season:'),
-                dcc.Dropdown(seasons_played, seasons_played[season_index], id='season-select'),
+                dcc.Dropdown(seasons_played, seasons_played[0], id='season-select'),
             ], className='dropdown-labeled')
             
         ]),  
@@ -67,20 +67,20 @@ app.layout = html.Div(children=[
 )
 def update_dashboard(player, season):
     player_id = players[players['full_name'] == player].index[0]
-    career_stats = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0]
-    seasons_played = career_stats['SEASON_ID']
+    player_stats = playerdashboardbyyearoveryear.PlayerDashboardByYearOverYear(player_id).get_data_frames()[1]
+    seasons_played = player_stats['GROUP_VALUE']
     if seasons_played.str.contains(season).any():
-        season_index = career_stats[career_stats['SEASON_ID']==season].index[0]
+        season_index = player_stats[player_stats['GROUP_VALUE']==season].index[0]
     else:
-        season_index = career_stats.index[-1]
-        season = career_stats.at[season_index,'SEASON_ID']
+        season_index = 0
+        season = seasons_played[0]
     
-    games_played = career_stats.at[season_index, 'GP']
-    points_per_game = career_stats.at[season_index, 'PTS'] / games_played
-    rebounds_per_game = career_stats.at[season_index, 'REB'] / games_played
-    assists_per_game = career_stats.at[season_index, 'AST'] / games_played
+    games_played = player_stats.at[season_index, 'GP']
+    points_per_game = player_stats.at[season_index, 'PTS'] / games_played
+    rebounds_per_game = player_stats.at[season_index, 'REB'] / games_played
+    assists_per_game = player_stats.at[season_index, 'AST'] / games_played
         
-    return seasons_played, season, f'PPG: {points_per_game:.0f}', f'REB: {rebounds_per_game:.0f}', f'AST: {assists_per_game:.0f}'
+    return seasons_played, season, f'PPG: {points_per_game:.0f}', f'RPG: {rebounds_per_game:.0f}', f'APG: {assists_per_game:.0f}'
 
 
 if __name__ == '__main__':
