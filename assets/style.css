@@ -2,6 +2,7 @@
 
 body {
     margin: 0;
+    background-color: #f2f5f6;
     font-family: "Roboto", arial, sans-serif;
 }
 
@@ -58,6 +59,7 @@ h1, h2 {
     display: flex;
     flex-wrap: wrap;
     overflow: auto;
+    border-bottom: black 2px solid;
 }
 
 #player-team {
@@ -74,7 +76,10 @@ h1, h2 {
 }
 
 .summary-stat {
-    background-color: lightgrey;
+    padding: 5% 10%;
+    margin-top: 2em;
+    background-color: white;
+    border-radius: 1em;
 }
 
 .dropdown-labeled {
