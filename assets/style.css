@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400&display=swap');@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap');
+
 body {
     margin: 0;
     font-family: "Roboto", arial, sans-serif;
@@ -7,6 +9,10 @@ header {
     display: flex;
     justify-content: center;
     background-color: black;
+}
+
+h1, h2 {
+    font-family: 'Oswald', sans-serif;
 }
 
 .logo {
@@ -31,6 +37,11 @@ header {
         grid-template-columns: repeat(auto-fit, minmax(186px , 1fr));
         grid-gap: 20px
     }
+
+    #player-headshot {
+        float: right;
+        height: 15em;
+    }
 }
 
 #dashboard {
@@ -40,6 +51,26 @@ header {
 
 #dropdown-filters {
     margin: 1em 0;
+}
+
+#player-info {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+#player-team {
+    margin: 0;
+}
+
+#player-name {
+    margin: 0;
+    text-transform: uppercase;
+}
+
+#player-headshot {
+    max-width: 100%;
 }
 
 .summary-stat {
