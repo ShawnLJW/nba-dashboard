@@ -54,13 +54,16 @@ app.layout = html.Div(children=[
 
         html.Div(id='summary-stats', children=[
             html.Div(children=[
-                html.H2(id='points', children=f'PPG: {points_per_game:.0f}'),
+                html.H2(id='points', children=f'{points_per_game:.1f}'),
+                html.P(children='Points Per Game'),
             ], className='summary-stat'),
             html.Div(children=[
-                html.H2(id='rebounds', children=f'REB: {rebounds_per_game:.0f}'),
+                html.H2(id='rebounds', children=f'{rebounds_per_game:.1f}'),
+                html.P(children='Rebounds Per Game'),
             ], className='summary-stat'),
             html.Div(children=[
-                html.H2(id='assists', children=f'AST: {assists_per_game:.0f}'),
+                html.H2(id='assists', children=f'{assists_per_game:.1f}'),
+                html.P(children='Assists Per Game'),
             ], className='summary-stat'),
         ]),
     ]),
@@ -99,7 +102,7 @@ def update_dashboard(player, season):
     rebounds_per_game = player_stats.at[season_index, 'REB'] / games_played
     assists_per_game = player_stats.at[season_index, 'AST'] / games_played
         
-    return seasons_played, season, headshot_src, player, team, f'PPG: {points_per_game:.0f}', f'RPG: {rebounds_per_game:.0f}', f'APG: {assists_per_game:.0f}'
+    return seasons_played, season, headshot_src, player, team, f'{points_per_game:.1f}', f'{rebounds_per_game:.1f}', f'{assists_per_game:.1f}'
 
 
 if __name__ == '__main__':
