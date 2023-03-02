@@ -26,13 +26,12 @@ h1, h2 {
     color: white;
 }
 
-@media (min-width: 500px){
-    #summary-stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 20px;
-    }
+#shotchart {
+    height: 85vw;
+    width: 90vw;
+}
 
+@media (min-width: 500px){
     #dropdown-filters {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(186px , 1fr));
@@ -42,6 +41,11 @@ h1, h2 {
     #player-headshot {
         float: right;
         height: 15em;
+    }
+
+    #shotchart {
+        height: 47vh;
+        width: 50vh;
     }
 }
 
@@ -73,13 +77,6 @@ h1, h2 {
 
 #player-headshot {
     max-width: 100%;
-}
-
-.summary-stat {
-    padding: 5% 10%;
-    margin-top: 2em;
-    background-color: white;
-    border-radius: 1em;
 }
 
 .dropdown-labeled {

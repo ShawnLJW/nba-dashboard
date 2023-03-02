@@ -1,4 +1,5 @@
 from dash import Dash, html, dcc, Input, Output
+import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
@@ -123,15 +124,14 @@ assists_per_game = player_stats.at[0, 'AST'] / games_played
 
 def plot_shots(shots):
     fig = px.scatter(
-        x=shots['LOC_X'], y=shots['LOC_Y'],
-        width=540, height=510
+        x=shots['LOC_X'], y=shots['LOC_Y']
     )
-    fig.update_layout(margin={'l':20, 'r':20, 't':20, 'b':20}, plot_bgcolor="#e3b871", shapes=court)
+    fig.update_layout(margin={'l':0, 'r':0, 't':0, 'b':0}, plot_bgcolor="#e3b871", shapes=court)
     fig.update_xaxes(range=[-250, 250], visible=False)
     fig.update_yaxes(range=[-47.5, 422.5], visible=False)
     return fig
 
-app = Dash(__name__)
+app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(children=[
     html.Header(children=[
@@ -160,20 +160,20 @@ app.layout = html.Div(children=[
             html.Img(id='player-headshot', src=f'https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png'),
         ]),
 
-        html.Div(id='summary-stats', children=[
+        html.Div(children=[
             html.Div(children=[
                 html.H2(id='points', children=f'{points_per_game:.1f}'),
                 html.P(children='Points Per Game'),
-            ], className='summary-stat'),
+            ], className='summary-stat col-sm-4'),
             html.Div(children=[
                 html.H2(id='rebounds', children=f'{rebounds_per_game:.1f}'),
                 html.P(children='Rebounds Per Game'),
-            ], className='summary-stat'),
+            ], className='summary-stat col-sm-4'),
             html.Div(children=[
                 html.H2(id='assists', children=f'{assists_per_game:.1f}'),
                 html.P(children='Assists Per Game'),
-            ], className='summary-stat'),
-        ]),
+            ], className='summary-stat col-sm-4'),
+        ], className='row gx-5'),
         
         dcc.Graph(id='shotchart', figure=plot_shots(shots))
     ]),
