@@ -1,4 +1,4 @@
-from dash import Dash, Input, Output
+from dash import Dash, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 import pandas as pd
 
@@ -6,6 +6,7 @@ from nba_api.stats.static.players import get_players
 from nba_api.stats.static.teams import get_teams
 from nba_api.stats.endpoints import shotchartdetail
 from nba_api.stats.endpoints import playerdashboardbyyearoveryear
+from nba_api.stats.endpoints import playergamelog
 
 from plotting import plot_shotchart
 from layouts import index
@@ -29,6 +30,7 @@ app.layout = index()
     Output('rebounds', 'children'),
     Output('assists', 'children'),
     Output('shotchart', 'figure'),
+    Output('gamelog', 'children'),
     Input('player-select', 'value'),
     Input('season-select', 'value'),
 )
@@ -52,10 +54,15 @@ def update_dashboard(player, season):
     rebounds_per_game = player_stats.at[season_index, 'REB'] / games_played
     assists_per_game = player_stats.at[season_index, 'AST'] / games_played
     
-    shots, shot_averages = shotchartdetail.ShotChartDetail(team_id, player_id, season_nullable=season).get_data_frames()
-    shot_chart = plot_shotchart(shots)
+    shots, _ = shotchartdetail.ShotChartDetail(team_id, player_id, season_nullable=season).get_data_frames()
+    shotchart = plot_shotchart(shots)
+    
+    games = playergamelog.PlayerGameLog(player_id, season).get_data_frames()[0]
+    games = games[['GAME_DATE', 'MATCHUP', 'WL', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA',
+       'FT_PCT', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'PLUS_MINUS']]
+    gamelog = dash_table.DataTable(games.to_dict('records'), [{"name": i, "id": i} for i in games.columns])
         
-    return seasons_played, season, headshot_src, player, team, f'{points_per_game:.1f}', f'{rebounds_per_game:.1f}', f'{assists_per_game:.1f}', shot_chart
+    return seasons_played, season, headshot_src, player, team, f'{points_per_game:.1f}', f'{rebounds_per_game:.1f}', f'{assists_per_game:.1f}', shotchart, gamelog
 
 
 if __name__ == '__main__':

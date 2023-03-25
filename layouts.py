@@ -1,10 +1,11 @@
 import pandas as pd
-from dash import html, dcc
+from dash import html, dcc, dash_table
 
 from nba_api.stats.static.players import get_players
 from nba_api.stats.static.teams import get_teams
 from nba_api.stats.endpoints import playerdashboardbyyearoveryear
 from nba_api.stats.endpoints import shotchartdetail
+from nba_api.stats.endpoints import playergamelog
 
 from plotting import plot_shotchart
 
@@ -26,6 +27,9 @@ games_played = player_stats.at[0, 'GP']
 points_per_game = player_stats.at[0, 'PTS'] / games_played
 rebounds_per_game = player_stats.at[0, 'REB'] / games_played
 assists_per_game = player_stats.at[0, 'AST'] / games_played
+games = playergamelog.PlayerGameLog(player_id, season_id).get_data_frames()[0]
+games = games[['GAME_DATE', 'MATCHUP', 'WL', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA',
+       'FT_PCT', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'PLUS_MINUS']]
 
 def index():
     return html.Div(children=[
@@ -59,18 +63,29 @@ def index():
                 html.Div(children=[
                     html.H2(id='points', children=f'{points_per_game:.1f}'),
                     html.P(children='Points Per Game'),
-                ], className='summary-stat col-sm-4'),
+                ], className='summary-stat col-md-4'),
                 html.Div(children=[
                     html.H2(id='rebounds', children=f'{rebounds_per_game:.1f}'),
                     html.P(children='Rebounds Per Game'),
-                ], className='summary-stat col-sm-4'),
+                ], className='summary-stat col-md-4'),
                 html.Div(children=[
                     html.H2(id='assists', children=f'{assists_per_game:.1f}'),
                     html.P(children='Assists Per Game'),
-                ], className='summary-stat col-sm-4'),
+                ], className='summary-stat col-md-4'),
             ], className='row gx-5'),
             
-            dcc.Graph(id='shotchart', figure=plot_shotchart(shots))
+            html.Div(
+                children=[
+                    dcc.Graph(id='shotchart', figure=plot_shotchart(shots), className='col-lg-4'),
+                    
+                    html.Div(children=[
+                        dash_table.DataTable(
+                            games.to_dict('records'),
+                            [{"name": i, "id": i} for i in games.columns]
+                        )
+                    ], id='gamelog', className='col-lg-8')
+                ], className='row')
+            
         ]),
 
     ])
